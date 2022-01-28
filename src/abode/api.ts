@@ -186,8 +186,19 @@ const getSession = async (): Promise<string> => {
 };
 
 export const enum AbodeDeviceType {
+  // On/Off "Light" Switches
 	Switch = 'device_type.power_switch_sensor',
-	Dimmer = 'device_type.dimmer_meter',
+
+  // A Dimmer Plugin Outlet
+	DimmerMeter = 'device_type.dimmer_meter',
+
+  // Dimmer Light Switches
+  // Supported by HomeKit enabled Abode systems
+  // But not by v1 Abode
+  Dimmer = 'device_type.dimmer',
+
+  // Read-only values
+  DoorContact = 'device_type.door_contact'
 }
 
 export interface AbodeDevice {
@@ -196,22 +207,14 @@ export interface AbodeDevice {
 	readonly name: string;
 }
 
+// TODO: Make this generic
 export const enum AbodeSwitchStatus {
 	On = 'On',
 	Off = 'Off',
 }
 
+// TODO: Make this generic
 export const enum AbodeSwitchStatusInt {
-	On = 1,
-	Off = 0,
-}
-
-export const enum AbodeDimmerStatus {
-	On = 'On',
-	Off = 'Off',
-}
-
-export const enum AbodeDimmerStatusInt {
 	On = 1,
 	Off = 0,
 }
@@ -227,21 +230,24 @@ export interface AbodeDimmerDevice extends AbodeDevice {
 	readonly statusEx: number;
 }
 
+export interface AbodeDimmerMeterDevice extends AbodeDevice {
+	readonly type_type: AbodeDeviceType.DimmerMeter;
+	readonly status: AbodeSwitchStatus;
+	readonly statusEx: number;
+}
+
 export const getDevices = async (): Promise<AbodeDevice[]> => {
   log.debug('getDevices');
   const response = await http.get('/api/v1/devices');
   return response.data;
 };
 
+// TODO: Make this generic
 export interface AbodeControlSwitchResponse {
 	readonly id: string;
 	readonly status: AbodeSwitchStatusInt;
 }
 
-export interface AbodeControlDimmerResponse {
-	readonly id: string;
-	readonly status: AbodeDimmerStatusInt;
-}
 export interface AbodeControlDimmerBrightnessResponse {
 	readonly id: string;
 	readonly level: number;
@@ -252,7 +258,7 @@ export const controlSwitch = async (id: string, status: AbodeSwitchStatusInt): P
   return response.data;
 };
 
-export const controlDimmer = async (id: string, status: AbodeDimmerStatusInt): Promise<AbodeControlDimmerResponse> => {
+export const controlDimmer = async (id: string, status: AbodeSwitchStatusInt): Promise<AbodeControlSwitchResponse> => {
   const response = await http.put(`/api/v1/control/light/${id}`, { status });
   return response.data;
 };
@@ -266,8 +272,12 @@ export const isDeviceTypeSwitch = (device: AbodeDevice): device is AbodeSwitchDe
   return device.type_tag === AbodeDeviceType.Switch;
 };
 
-export const isDeviceTypeDimmer = (device: AbodeDevice): device is AbodeDimmerDevice => {
+export const isDeviceTypeDimmerMeter = (device: AbodeDevice): device is AbodeDimmerMeterDevice => {
   return device.type_tag === AbodeDeviceType.Dimmer;
+};
+
+export const isDeviceTypeDimmer = (device: AbodeDevice): device is AbodeDimmerDevice => {
+  return device.type_tag === AbodeDeviceType.DimmerMeter;
 };
 
 export const enum AbodeEventType {

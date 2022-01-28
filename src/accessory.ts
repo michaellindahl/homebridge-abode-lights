@@ -79,7 +79,7 @@ export class AbodeDimmerAccessory {
     this.platform.log.debug('setDimmerState', this.accessory.context.device.id, value);
 
     try {
-      const status = this.platform.convertDimmerTargetStateToAbodeDimmerStatusInt(value);
+      const status = this.platform.convertDimmerTargetStateToAbodeSwitchStatusInt(value);
       await controlDimmer(this.accessory.context.device.id, status);
       callback();
     } catch (error) {
@@ -92,7 +92,7 @@ export class AbodeDimmerAccessory {
     this.platform.log.debug('setDimmerBrightness', this.accessory.context.device.id, value);
 
     try {
-      const status = this.platform.convertDimmerTargetStateToAbodeDimmerStatusInt(value);
+      const status = this.platform.convertDimmerTargetStateToAbodeSwitchStatusInt(value);
       await controlDimmerBrightness(this.accessory.context.device.id, status);
       callback();
     } catch (error) {

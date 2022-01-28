@@ -13,12 +13,12 @@ import {
   abodeInit,
   getDevices,
   AbodeSwitchStatusInt,
-  AbodeDimmerStatusInt,
   isDeviceTypeSwitch,
   AbodeSwitchDevice,
   AbodeSwitchStatus,
   AbodeDimmerDevice,
   isDeviceTypeDimmer,
+  isDeviceTypeDimmerMeter,
 } from './abode/api';
 import { PLATFORM_NAME, PLUGIN_NAME } from './constants';
 
@@ -128,7 +128,7 @@ export class AbodeLightsPlatform implements DynamicPlatformPlugin {
             this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
             this.accessories.push(accessory);
           }
-        } else if (isDeviceTypeDimmer(device)) {
+        } else if (isDeviceTypeDimmer(device) || isDeviceTypeDimmerMeter(device)) {
 
           const uuid = this.api.hap.uuid.generate(device.id);
 
@@ -251,11 +251,11 @@ export class AbodeLightsPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  convertDimmerTargetStateToAbodeDimmerStatusInt(value: CharacteristicValue): number {
+  convertDimmerTargetStateToAbodeSwitchStatusInt(value: CharacteristicValue): number {
     if (value) {
       return <number>value;
     } else {
-      return AbodeDimmerStatusInt.Off;
+      return AbodeSwitchStatusInt.Off;
     }
   }
 }
