@@ -150,6 +150,7 @@ export class AbodeLightsPlatform implements DynamicPlatformPlugin {
 
       switch (device.type_tag) {
         case 'device_type.dimmer_meter':
+        case 'device_type.dimmer':
           {
             const d = device as AbodeDimmerDevice;
             const service = accessory.getService(this.Service.Lightbulb);
@@ -218,6 +219,7 @@ export class AbodeLightsPlatform implements DynamicPlatformPlugin {
     try {
       switch (device.type_tag) {
         case 'device_type.dimmer_meter':
+        case 'device_type.dimmer':
         case 'device_type.power_switch_sensor':
         case 'device_type.light_bulb':
         case 'device_type.hue':
@@ -293,6 +295,7 @@ export class AbodeLightsPlatform implements DynamicPlatformPlugin {
     switch (device.type_tag) {
       // A Dimmer switch
       case 'device_type.dimmer_meter':
+      case 'device_type.dimmer':
         new AbodeDimmerAccessory(this, accessory, device);
         this.accessories.push(accessory);
         break;

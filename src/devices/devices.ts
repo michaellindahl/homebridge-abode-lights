@@ -1,8 +1,19 @@
 export const enum AbodeDeviceType {
+  // On/Off Switches, typically for lights.
   Switch = 'device_type.power_switch_sensor',
+
+  // A Dimmer Plugin Outlet
   Dimmer = 'device_type.dimmer_meter',
   LightBulb = 'device_type.light_bulb',
   Hue = 'device_type.hue',
+
+  // Dimmer Light Switches
+  // Supported by HomeKit enabled Abode systems
+  // But not by v1 Abode
+  DimmerLight = 'device_type.dimmer',
+
+  // Read-only values
+  DoorContact = 'device_type.door_contact'
 }
 
 export interface AbodeDevice {
@@ -21,6 +32,16 @@ export interface AbodeSwitchDevice extends AbodeDevice {
 
 export interface AbodeDimmerDevice extends AbodeDevice {
   readonly type_tag: AbodeDeviceType.Dimmer;
+  readonly status: 'On' | 'Off';
+  readonly statuses: {
+    level: string;
+    switch: string;
+  };
+  readonly brightness: number;
+}
+
+export interface AbodeDimmerLightDevice extends AbodeDevice {
+  readonly type_tag: AbodeDeviceType.DimmerLight;
   readonly status: 'On' | 'Off';
   readonly statuses: {
     level: string;
@@ -63,6 +84,10 @@ export const isDeviceTypeSwitch = (device: AbodeDevice): device is AbodeSwitchDe
 
 export const isDeviceTypeDimmer = (device: AbodeDevice): device is AbodeDimmerDevice => {
   return device.type_tag === AbodeDeviceType.Dimmer;
+};
+
+export const isDeviceTypeDimmerLight = (device: AbodeDevice): device is AbodeDimmerLightDevice => {
+  return device.type_tag === AbodeDeviceType.DimmerLight;
 };
 
 let lastUpdatedDevice = '';
